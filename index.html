@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>garxu.bio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+/* ─── ROOT ─── */
+:root {
+  --bg: #000000;
+  --card-bg: rgba(8,8,12,0.72);
+  --card-border: rgba(255,255,255,0.07);
+  --accent: #7c6af7;
+  --accent2: #c8ff00;
+  --text: #f0ede8;
+  --muted: #6b6f82;
+  --dim: #32354a;
+  --font-h: 'Syne', sans-serif;
+  --font-b: 'DM Sans', sans-serif;
+  --card-w: min(440px, 94vw);
+  --banner-h: clamp(90px, 18vw, 130px);
+  --avatar-d: clamp(72px, 16vw, 92px);
+  --card-r: 22px;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+min-height: 100%;
+background: var(–bg);
+font-family: var(–font-b);
+color: var(–text);
+overflow-x: hidden;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: clamp(16px, 4vw, 48px) 12px clamp(24px, 4vw, 48px);
+}
+
+/* ─── STARFIELD CANVAS ─── */
+#starfield {
+position: fixed;
+inset: 0;
+z-index: 0;
+pointer-events: none;
+}
+
+/* ─── CARD ─── */
+.card {
+position: relative;
+z-index: 10;
+width: var(–card-w);
+background: var(–card-bg);
+border: 1px solid var(–card-border);
+border-radius: var(–card-r);
+backdrop-filter: blur(28px) saturate(140%);
+-webkit-backdrop-filter: blur(28px) saturate(140%);
+box-shadow:
+0 0 0 1px rgba(255,255,255,0.04),
+0 32px 96px rgba(0,0,0,0.9),
+0 0 60px rgba(124,106,247,0.12),
+inset 0 1px 0 rgba(255,255,255,0.06);
+overflow: hidden;
+transform-style: preserve-3d;
+will-change: transform;
+transition: box-shadow 0.4s ease;
+}
+
+/* ─── BANNER ─── */
+.banner {
+width: 100%;
+height: var(–banner-h);
+position: relative;
+overflow: hidden;
+flex-shrink: 0;
+}
+.banner-canvas {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+}
+.banner-overlay {
+position: absolute;
+inset: 0;
+background: linear-gradient(to bottom, transparent 40%, var(–card-bg) 100%);
+pointer-events: none;
+}
+
+/* ─── AVATAR SECTION ─── */
+.avatar-section {
+display: flex;
+flex-direction: column;
+align-items: center;
+margin-top: calc(var(–avatar-d) * -0.5);
+padding: 0 20px 0;
+position: relative;
+z-index: 2;
+}
+.avatar-wrap {
+width: var(–avatar-d);
+height: var(–avatar-d);
+position: relative;
+flex-shrink: 0;
+}
+.avatar-ring-svg {
+position: absolute;
+inset: -3px;
+width: calc(100% + 6px);
+height: calc(100% + 6px);
+animation: ringRotate 5s linear infinite;
+}
+@keyframes ringRotate { to { transform: rotate(360deg); } }
+.avatar-inner {
+position: absolute;
+inset: 4px;
+border-radius: 50%;
+background: linear-gradient(135deg, #1a1630, #0d0b1a);
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+z-index: 1;
+}
+.avatar-letter {
+font-family: var(–font-h);
+font-size: clamp(22px, 6vw, 32px);
+font-weight: 800;
+background: linear-gradient(135deg, var(–accent), var(–accent2));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+line-height: 1;
+}
+.status-dot {
+position: absolute;
+bottom: 3px;
+right: 3px;
+width: clamp(11px, 2.5vw, 14px);
+height: clamp(11px, 2.5vw, 14px);
+background: #23a55a;
+border-radius: 50%;
+border: 2.5px solid #08080c;
+z-index: 2;
+}
+
+/* ─── USERNAME ─── */
+.username-block {
+text-align: center;
+margin-top: clamp(8px, 2vw, 12px);
+padding: 0 16px;
+}
+.username {
+font-family: var(–font-h);
+font-size: clamp(20px, 5.5vw, 26px);
+font-weight: 800;
+letter-spacing: -0.01em;
+background: linear-gradient(100deg, #b8a4ff 0%, var(–accent) 25%, #ffffff 50%, var(–accent2) 75%, var(–accent) 100%);
+background-size: 300% 100%;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+animation: gradSlide 5s ease-in-out infinite;
+display: inline-block;
+line-height: 1.1;
+}
+@keyframes gradSlide {
+0%   { background-position: 0% 50%; }
+50%  { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+.tagline {
+font-size: clamp(11px, 2.8vw, 13px);
+font-weight: 400;
+color: var(–muted);
+margin-top: 4px;
+letter-spacing: 0.02em;
+}
+
+/* ─── BADGES ─── */
+.badges {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 6px;
+padding: clamp(10px, 2.5vw, 14px) 16px 0;
+}
+.badge {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+padding: 4px 10px;
+border-radius: 99px;
+font-size: clamp(10px, 2.3vw, 11.5px);
+font-weight: 700;
+letter-spacing: 0.04em;
+border: 1px solid transparent;
+transition: transform 0.18s ease, box-shadow 0.18s ease;
+cursor: default;
+white-space: nowrap;
+}
+.badge:hover { transform: translateY(-2px); }
+.badge svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+.b-owner  { background: rgba(255,197,0,0.12);  border-color: rgba(255,197,0,0.28);  color: #ffc500; box-shadow: 0 0 12px rgba(255,197,0,0.08); }
+.b-dev    { background: rgba(88,101,242,0.15); border-color: rgba(88,101,242,0.32); color: #7289ff; box-shadow: 0 0 12px rgba(88,101,242,0.1); }
+.b-premium{ background: rgba(255,73,250,0.12); border-color: rgba(255,73,250,0.28); color: #ff73fa; box-shadow: 0 0 12px rgba(255,73,250,0.08); }
+.b-design { background: rgba(200,255,0,0.1);   border-color: rgba(200,255,0,0.22);  color: #c8ff00; box-shadow: 0 0 12px rgba(200,255,0,0.06); }
+.b-gamer  { background: rgba(0,210,255,0.1);   border-color: rgba(0,210,255,0.22);  color: #00d2ff; box-shadow: 0 0 12px rgba(0,210,255,0.06); }
+
+/* ─── DIVIDER ─── */
+.divider {
+height: 1px;
+margin: clamp(12px, 3vw, 16px) 20px 0;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+}
+
+/* ─── BIO ─── */
+.bio-section {
+padding: clamp(10px, 2.5vw, 14px) 22px 0;
+text-align: center;
+}
+.bio-text {
+font-size: clamp(12px, 3vw, 13.5px);
+font-weight: 300;
+color: #8b8fa8;
+line-height: 1.75;
+}
+.bio-text strong { color: var(–text); font-weight: 600; }
+.bio-text .hl  { color: var(–accent2); font-weight: 500; }
+
+/* ─── SOCIAL LINKS ─── */
+.links-section {
+padding: clamp(10px, 2.5vw, 14px) 16px 0;
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.link-btn {
+display: flex;
+align-items: center;
+gap: clamp(8px, 2vw, 12px);
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.07);
+border-radius: 12px;
+padding: clamp(9px, 2vw, 11px) clamp(12px, 2.5vw, 16px);
+color: var(–text);
+font-family: var(–font-b);
+font-size: clamp(12px, 3vw, 13.5px);
+font-weight: 500;
+cursor: pointer;
+text-decoration: none;
+transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+width: 100%;
+text-align: left;
+position: relative;
+overflow: hidden;
+}
+.link-btn::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+opacity: 0;
+transition: opacity 0.2s;
+border-radius: 11px;
+}
+.link-btn:hover { transform: translateY(-2px); }
+.link-btn:hover::before { opacity: 1; }
+.link-btn:active { transform: translateY(0); }
+
+.link-icon {
+width: clamp(28px, 7vw, 34px);
+height: clamp(28px, 7vw, 34px);
+border-radius: 9px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+}
+.link-icon svg {
+width: clamp(15px, 3.5vw, 18px);
+height: clamp(15px, 3.5vw, 18px);
+}
+.link-label { flex: 1; }
+.link-arrow { color: var(–muted); flex-shrink: 0; }
+.link-arrow svg { width: 13px; height: 13px; }
+
+.lb-discord::before { background: rgba(88,101,242,0.06); }
+.lb-discord:hover { border-color: rgba(88,101,242,0.4); box-shadow: 0 4px 20px rgba(88,101,242,0.15); }
+.lb-discord .link-icon { background: rgba(88,101,242,0.15); color: #5865f2; }
+
+.lb-github::before { background: rgba(255,255,255,0.04); }
+.lb-github:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 4px 20px rgba(255,255,255,0.05); }
+.lb-github .link-icon { background: rgba(255,255,255,0.08); color: #e6edf3; }
+
+.lb-twitter::before { background: rgba(255,255,255,0.04); }
+.lb-twitter:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 4px 20px rgba(255,255,255,0.05); }
+.lb-twitter .link-icon { background: rgba(255,255,255,0.08); color: #e6edf3; }
+
+/* ─── MUSIC PLAYER ─── */
+.music-section {
+margin: clamp(10px, 2.5vw, 14px) 16px 0;
+background: rgba(255,255,255,0.03);
+border: 1px solid rgba(255,255,255,0.07);
+border-radius: 14px;
+overflow: hidden;
+}
+.music-header {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: clamp(10px, 2vw, 13px) clamp(12px, 2.5vw, 16px);
+}
+.music-art {
+width: clamp(38px, 9vw, 46px);
+height: clamp(38px, 9vw, 46px);
+border-radius: 9px;
+background: linear-gradient(135deg, #1db954, #0a7c35);
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+transition: transform 0.1s;
+}
+.music-art.spinning { animation: spinArt 8s linear infinite; }
+@keyframes spinArt { to { transform: rotate(360deg); } }
+.music-art svg { width: 20px; height: 20px; }
+.music-meta { flex: 1; min-width: 0; }
+.music-title {
+font-family: var(–font-h);
+font-size: clamp(12px, 3vw, 13.5px);
+font-weight: 700;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.music-artist {
+font-size: clamp(10px, 2.5vw, 11.5px);
+color: var(–muted);
+margin-top: 2px;
+}
+.music-equalizer {
+display: flex;
+align-items: flex-end;
+gap: 2.5px;
+height: 18px;
+flex-shrink: 0;
+}
+.music-equalizer span {
+width: 3px;
+border-radius: 2px;
+background: #1db954;
+transition: height 0.1s;
+}
+.music-equalizer.paused span { height: 3px !important; }
+.eq-1 { animation: eq1 0.6s ease-in-out infinite alternate; }
+.eq-2 { animation: eq2 0.5s ease-in-out infinite alternate; animation-delay: 0.1s; }
+.eq-3 { animation: eq3 0.7s ease-in-out infinite alternate; animation-delay: 0.2s; }
+.eq-4 { animation: eq4 0.55s ease-in-out infinite alternate; animation-delay: 0.05s; }
+.eq-5 { animation: eq5 0.65s ease-in-out infinite alternate; animation-delay: 0.15s; }
+@keyframes eq1 { from{height:4px} to{height:16px} }
+@keyframes eq2 { from{height:8px} to{height:14px} }
+@keyframes eq3 { from{height:3px} to{height:18px} }
+@keyframes eq4 { from{height:10px} to{height:13px} }
+@keyframes eq5 { from{height:5px} to{height:15px} }
+
+/* Progress bar */
+.music-progress-wrap {
+padding: 0 clamp(12px, 2.5vw, 16px) 6px;
+}
+.music-time-row {
+display: flex;
+justify-content: space-between;
+font-size: 10px;
+color: var(–dim);
+margin-bottom: 4px;
+font-variant-numeric: tabular-nums;
+}
+.music-progress-track {
+width: 100%;
+height: 3px;
+background: rgba(255,255,255,0.08);
+border-radius: 2px;
+position: relative;
+cursor: pointer;
+}
+.music-progress-fill {
+height: 100%;
+background: linear-gradient(90deg, #1db954, #17a349);
+border-radius: 2px;
+width: 0%;
+transition: width 0.5s linear;
+position: relative;
+}
+.music-progress-fill::after {
+content: ‘’;
+position: absolute;
+right: -5px;
+top: 50%;
+transform: translateY(-50%);
+width: 10px;
+height: 10px;
+background: #fff;
+border-radius: 50%;
+opacity: 0;
+transition: opacity 0.15s;
+box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+.music-progress-track:hover .music-progress-fill::after { opacity: 1; }
+
+/* Controls */
+.music-controls {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: clamp(12px, 3vw, 20px);
+padding: 6px clamp(12px, 2.5vw, 16px) clamp(10px, 2vw, 13px);
+}
+.mc-btn {
+background: none;
+border: none;
+color: var(–muted);
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+padding: 4px;
+transition: color 0.2s, transform 0.15s;
+}
+.mc-btn:hover { color: var(–text); transform: scale(1.12); }
+.mc-btn svg { width: 18px; height: 18px; }
+.mc-btn.play-pause {
+width: clamp(36px, 9vw, 42px);
+height: clamp(36px, 9vw, 42px);
+background: #1db954;
+color: #000;
+padding: 0;
+box-shadow: 0 0 16px rgba(29,185,84,0.3);
+transition: transform 0.15s, box-shadow 0.2s;
+}
+.mc-btn.play-pause:hover { transform: scale(1.1); box-shadow: 0 0 24px rgba(29,185,84,0.5); }
+.mc-btn.play-pause svg { width: 18px; height: 18px; }
+
+.mc-volume-wrap {
+display: flex;
+align-items: center;
+gap: 6px;
+flex: 1;
+max-width: 90px;
+}
+.mc-volume-wrap svg { width: 15px; height: 15px; color: var(–muted); flex-shrink: 0; }
+.volume-slider {
+flex: 1;
+height: 3px;
+border-radius: 2px;
+appearance: none;
+background: rgba(255,255,255,0.1);
+outline: none;
+cursor: pointer;
+}
+.volume-slider::-webkit-slider-thumb {
+appearance: none;
+width: 11px;
+height: 11px;
+background: #fff;
+border-radius: 50%;
+box-shadow: 0 0 4px rgba(0,0,0,0.4);
+}
+
+/* ─── CARD FOOTER ─── */
+.card-footer {
+padding: clamp(10px, 2.5vw, 14px) 20px clamp(14px, 3.5vw, 18px);
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+font-size: 11px;
+color: var(–dim);
+border-top: 1px solid rgba(255,255,255,0.05);
+margin-top: clamp(10px, 2.5vw, 14px);
+}
+.footer-sep {
+width: 3px;
+height: 3px;
+border-radius: 50%;
+background: var(–dim);
+}
+
+/* ─── SHOOTING LIGHT ─── */
+/* handled in canvas */
+
+/* ─── RESPONSIVE BREAKPOINTS ─── */
+@media (max-width: 380px) {
+:root { –card-r: 16px; }
+.badges { gap: 4px; }
+.badge { padding: 3px 8px; }
+.music-controls { gap: 10px; }
+}
+@media (max-width: 320px) {
+:root { –card-w: 98vw; }
+.mc-volume-wrap { display: none; }
+}
+@media (min-width: 900px) {
+:root { –card-w: 430px; }
+}
+@media (min-width: 1400px) {
+:root { –card-w: 460px; }
+body { padding: 60px 12px; }
+}
+@media (min-height: 900px) {
+body { justify-content: center; }
+}
+
+/* Card entrance */
+@keyframes cardReveal {
+from { opacity: 0; transform: translateY(28px) scale(0.98); }
+to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+.card { animation: cardReveal 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+
+/* Staggered children */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(12px); }
+to   { opacity: 1; transform: translateY(0);    }
+}
+.avatar-section { animation: fadeUp 0.6s ease 0.15s both; }
+.username-block  { animation: fadeUp 0.6s ease 0.22s both; }
+.badges          { animation: fadeUp 0.6s ease 0.28s both; }
+.divider         { animation: fadeUp 0.6s ease 0.32s both; }
+.bio-section     { animation: fadeUp 0.6s ease 0.36s both; }
+.links-section   { animation: fadeUp 0.6s ease 0.42s both; }
+.music-section   { animation: fadeUp 0.6s ease 0.48s both; }
+.card-footer     { animation: fadeUp 0.6s ease 0.52s both; }
+</style>
+
+</head>
+<body>
+
+<!-- BACKGROUND CANVAS -->
+
+<canvas id="starfield"></canvas>
+
+<!-- CARD -->
+
+<div class="card" id="card">
+
+  <!-- BANNER -->
+
+  <div class="banner">
+    <canvas class="banner-canvas" id="bannerCanvas"></canvas>
+    <div class="banner-overlay"></div>
+  </div>
+
+  <!-- AVATAR -->
+
+  <div class="avatar-section">
+    <div class="avatar-wrap">
+      <!-- 3px gradient ring via SVG -->
+      <svg class="avatar-ring-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#7c6af7"/>
+            <stop offset="50%"  stop-color="#c8ff00"/>
+            <stop offset="100%" stop-color="#7c6af7"/>
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="47" stroke="url(#ringGrad)" stroke-width="3"/>
+      </svg>
+      <div class="avatar-inner">
+        <span class="avatar-letter">G</span>
+      </div>
+      <div class="status-dot"></div>
+    </div>
+  </div>
+
+  <!-- USERNAME -->
+
+  <div class="username-block">
+    <div class="username">garxu</div>
+    <div class="tagline">graphic designer &nbsp;·&nbsp; developer &nbsp;·&nbsp; gamer</div>
+  </div>
+
+  <!-- BADGES -->
+
+  <div class="badges">
+    <!-- Owner -->
+    <div class="badge b-owner">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2L12.39 7.26L18 8.18L14 12.14L14.76 18L10 15.27L5.24 18L6 12.14L2 8.18L7.61 7.26L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="rgba(255,197,0,0.15)"/>
+      </svg>
+      Owner
+    </div>
+    <!-- Dev -->
+    <div class="badge b-dev">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="6,9 2,13 6,17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,9 18,13 14,17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="11" y1="7" x2="9" y2="19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      Developer
+    </div>
+    <!-- Premium -->
+    <div class="badge b-premium">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2L11.8 7.4H17.4L12.8 10.6L14.6 16L10 12.8L5.4 16L7.2 10.6L2.6 7.4H8.2L10 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" fill="rgba(255,73,250,0.12)"/>
+        <circle cx="10" cy="10" r="2.5" fill="currentColor" opacity="0.7"/>
+      </svg>
+      Premium
+    </div>
+    <!-- Designer -->
+    <div class="badge b-design">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="10" y1="3" x2="10" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="10" y1="13" x2="10" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="3" y1="10" x2="7" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13" y1="10" x2="17" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Designer
+    </div>
+    <!-- Gamer -->
+    <div class="badge b-gamer">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="7" width="16" height="8" rx="4" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="7" y1="9" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="5" y1="11" x2="9" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="13" cy="10" r="1" fill="currentColor"/>
+        <circle cx="15" cy="12" r="1" fill="currentColor"/>
+      </svg>
+      Gamer
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+
+  <div class="divider"></div>
+
+  <!-- BIO -->
+
+  <div class="bio-section">
+    <p class="bio-text">
+      <strong>Graphic designer</strong> making brands that <span class="hl">stop scrolling.</span><br>
+      <strong>Developer</strong> who codes clean &amp; ships fast — Discord bots, web apps &amp; more.<br>
+      <strong>Gamer</strong> when the work is done. <span class="hl">Always down to play.</span><br>
+      Based in NYC · Available <span class="hl">worldwide</span> 🌍
+    </p>
+  </div>
+
+  <!-- DIVIDER -->
+
+  <div class="divider"></div>
+
+  <!-- LINKS -->
+
+  <div class="links-section">
+
+```
+<!-- Discord -->
+<a class="link-btn lb-discord" href="https://discord.gg/garxu" target="_blank" rel="noopener">
+  <div class="link-icon">
+    <!-- Discord SVG -->
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.11.127 18.16.17 18.19a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+    </svg>
+  </div>
+  <span class="link-label">Discord</span>
+  <span class="link-arrow">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</a>
+
+<!-- GitHub -->
+<a class="link-btn lb-github" href="https://github.com/garxu" target="_blank" rel="noopener">
+  <div class="link-icon">
+    <!-- GitHub SVG -->
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+    </svg>
+  </div>
+  <span class="link-label">GitHub</span>
+  <span class="link-arrow">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</a>
+
+<!-- Twitter/X -->
+<a class="link-btn lb-twitter" href="https://x.com/garxudesign" target="_blank" rel="noopener">
+  <div class="link-icon">
+    <!-- X / Twitter SVG -->
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+  </div>
+  <span class="link-label">X / Twitter</span>
+  <span class="link-arrow">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</a>
+```
+
+  </div>
+
+  <!-- MUSIC PLAYER -->
+
+  <div class="music-section">
+
+```
+<div class="music-header">
+  <div class="music-art spinning" id="musicArt">
+    <!-- Music note SVG -->
+    <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 18V5l12-2v13M9 18c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm12-2c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  </div>
+  <div class="music-meta">
+    <div class="music-title" id="musicTitle">Never Gonna Give You Up</div>
+    <div class="music-artist">Rick Astley</div>
+  </div>
+  <div class="music-equalizer" id="musicEQ">
+    <span class="eq-1" style="height:10px"></span>
+    <span class="eq-2" style="height:14px"></span>
+    <span class="eq-3" style="height:7px"></span>
+    <span class="eq-4" style="height:16px"></span>
+    <span class="eq-5" style="height:9px"></span>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="music-progress-wrap">
+  <div class="music-time-row">
+    <span id="timeEl">0:00</span>
+    <span id="durEl">3:33</span>
+  </div>
+  <div class="music-progress-track" id="progressTrack" onclick="seekMusic(event)">
+    <div class="music-progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<!-- Controls -->
+<div class="music-controls">
+
+  <!-- Shuffle -->
+  <button class="mc-btn" id="shuffleBtn" title="Shuffle" onclick="toggleShuffle()">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 3h5v5M4 20l16.2-16.2M21 16v5h-5M15 15l5.9 5.9M4 4l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Prev -->
+  <button class="mc-btn" title="Previous" onclick="prevTrack()">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="19,20 9,12 19,4" fill="currentColor"/>
+      <line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- Play / Pause -->
+  <button class="mc-btn play-pause" id="playPauseBtn" title="Play/Pause" onclick="togglePlay()">
+    <svg id="playIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="5,3 19,12 5,21" fill="black"/>
+    </svg>
+  </button>
+
+  <!-- Next -->
+  <button class="mc-btn" title="Next" onclick="nextTrack()">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="5,4 15,12 5,20" fill="currentColor"/>
+      <line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- Volume -->
+  <div class="mc-volume-wrap">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="currentColor" opacity="0.6"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" oninput="setVolume(this.value)">
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- FOOTER -->
+
+  <div class="card-footer">
+    <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+      <path d="M10 6v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    </svg>
+    <span>garxu.bio</span>
+    <div class="footer-sep"></div>
+    <span style="color:var(--accent)">premium</span>
+    <div class="footer-sep"></div>
+    <span>© 2025</span>
+  </div>
+
+</div><!-- /card -->
+
+<!-- HIDDEN AUDIO -->
+
+<audio id="audio" loop preload="none">
+  <!-- Using a reliable public rickroll proxy -->
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* ══════════════════════════════════════
+   STARFIELD + SHOOTING LIGHT BACKGROUND
+══════════════════════════════════════ */
+const sfCanvas = document.getElementById('starfield');
+const sfCtx    = sfCanvas.getContext('2d');
+let W, H;
+
+function resizeSF() {
+  W = sfCanvas.width  = window.innerWidth;
+  H = sfCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeSF);
+resizeSF();
+
+/* Stars */
+const STAR_COUNT = 200;
+const stars = Array.from({length: STAR_COUNT}, () => ({
+  x:     Math.random() * 3000,
+  y:     Math.random() * 3000,
+  r:     Math.random() * 1.4 + 0.2,
+  alpha: Math.random() * 0.7 + 0.1,
+  twinkleSpeed: Math.random() * 0.015 + 0.005,
+  twinkleDir:   Math.random() > 0.5 ? 1 : -1,
+}));
+
+/* Shooting lights (diagonal from top-left) */
+const shoots = [];
+function spawnShoot() {
+  shoots.push({
+    x:   -60,
+    y:   -60 + Math.random() * H * 0.5,  // start from top-left area
+    len: Math.random() * 180 + 120,
+    speed: Math.random() * 5 + 4,
+    alpha: 1,
+    w:    Math.random() * 1.5 + 0.8,
+    trail: [],
+  });
+}
+
+let shootTimer = 0;
+
+/* Sparkle particles (star bursts) */
+const sparkles = [];
+function spawnSparkle() {
+  sparkles.push({
+    x:     Math.random() * W,
+    y:     Math.random() * H,
+    r:     Math.random() * 2 + 0.5,
+    alpha: 1,
+    life:  Math.random() * 40 + 20,
+    maxLife: 60,
+  });
+}
+
+function sfLoop() {
+  requestAnimationFrame(sfLoop);
+  sfCtx.clearRect(0, 0, W, H);
+
+  /* ─ Background stars ─ */
+  stars.forEach(s => {
+    s.alpha += s.twinkleSpeed * s.twinkleDir;
+    if (s.alpha >= 0.9 || s.alpha <= 0.05) s.twinkleDir *= -1;
+    sfCtx.save();
+    sfCtx.globalAlpha = s.alpha;
+    sfCtx.fillStyle   = '#ffffff';
+    sfCtx.beginPath();
+    sfCtx.arc(s.x % W, s.y % H, s.r, 0, Math.PI * 2);
+    sfCtx.fill();
+    sfCtx.restore();
+  });
+
+  /* ─ Shoot spawn ─ */
+  shootTimer++;
+  if (shootTimer > 90 + Math.random() * 80) {
+    spawnShoot();
+    shootTimer = 0;
+  }
+
+  /* ─ Draw shooting lights ─ */
+  for (let i = shoots.length - 1; i >= 0; i--) {
+    const s = shoots[i];
+    s.x  += s.speed;
+    s.y  += s.speed;                     // diagonal → going top-left to bottom-right
+
+    const x2 = s.x - s.len * 0.707;   // cos(45°)
+    const y2 = s.y - s.len * 0.707;   // sin(45°)
+
+    sfCtx.save();
+    const grad = sfCtx.createLinearGradient(x2, y2, s.x, s.y);
+    grad.addColorStop(0, 'rgba(255,255,255,0)');
+    grad.addColorStop(0.6, `rgba(180,160,255,${s.alpha * 0.6})`);
+    grad.addColorStop(1,   `rgba(255,255,255,${s.alpha})`);
+
+    sfCtx.strokeStyle = grad;
+    sfCtx.lineWidth   = s.w;
+    sfCtx.lineCap     = 'round';
+    sfCtx.shadowColor = '#a090ff';
+    sfCtx.shadowBlur  = 8;
+    sfCtx.globalAlpha = s.alpha;
+    sfCtx.beginPath();
+    sfCtx.moveTo(x2, y2);
+    sfCtx.lineTo(s.x, s.y);
+    sfCtx.stroke();
+
+    /* head glow */
+    const headGrad = sfCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 8);
+    headGrad.addColorStop(0, `rgba(255,255,255,${s.alpha * 0.9})`);
+    headGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    sfCtx.fillStyle = headGrad;
+    sfCtx.beginPath();
+    sfCtx.arc(s.x, s.y, 8, 0, Math.PI * 2);
+    sfCtx.fill();
+    sfCtx.restore();
+
+    s.alpha -= 0.018;
+    if (s.alpha <= 0 || s.x > W + 200 || s.y > H + 200) {
+      shoots.splice(i, 1);
+    }
+  }
+
+  /* ─ Sparkle star bursts ─ */
+  if (Math.random() < 0.06) spawnSparkle();
+  for (let i = sparkles.length - 1; i >= 0; i--) {
+    const sp = sparkles[i];
+    sp.life--;
+    const progress = sp.life / sp.maxLife;
+    sfCtx.save();
+    sfCtx.globalAlpha = progress * sp.alpha * 0.9;
+    sfCtx.fillStyle = '#c8b8ff';
+    /* 4-pointed star */
+    sfCtx.translate(sp.x, sp.y);
+    sfCtx.beginPath();
+    const pts = 4, outer = sp.r * (1 + (1 - progress) * 0.5), inner = outer * 0.35;
+    for (let k = 0; k < pts * 2; k++) {
+      const ang = (k * Math.PI) / pts - Math.PI / 2;
+      const rr  = k % 2 === 0 ? outer : inner;
+      k === 0 ? sfCtx.moveTo(Math.cos(ang)*rr, Math.sin(ang)*rr)
+              : sfCtx.lineTo(Math.cos(ang)*rr, Math.sin(ang)*rr);
+    }
+    sfCtx.closePath();
+    sfCtx.fill();
+    sfCtx.restore();
+    if (sp.life <= 0) sparkles.splice(i, 1);
+  }
+}
+sfLoop();
+
+/* ══════════════════════════════════════
+   BANNER CANVAS — animated gradient
+══════════════════════════════════════ */
+const bCanvas = document.getElementById('bannerCanvas');
+const bCtx    = bCanvas.getContext('2d');
+let bW, bH, bT = 0;
+
+function resizeBanner() {
+  bW = bCanvas.width  = bCanvas.offsetWidth;
+  bH = bCanvas.height = bCanvas.offsetHeight;
+}
+resizeBanner();
+new ResizeObserver(resizeBanner).observe(bCanvas.parentElement);
+
+function bannerLoop() {
+  requestAnimationFrame(bannerLoop);
+  bT += 0.008;
+  bCtx.clearRect(0, 0, bW, bH);
+
+  /* base dark */
+  bCtx.fillStyle = '#05040f';
+  bCtx.fillRect(0, 0, bW, bH);
+
+  /* animated orbs */
+  const orbs = [
+    { x: bW * (0.3 + Math.sin(bT * 0.7) * 0.2),  y: bH * 0.5, r: bW * 0.45, c1: 'rgba(124,106,247,0.55)', c2: 'transparent' },
+    { x: bW * (0.75 + Math.cos(bT * 0.5) * 0.15), y: bH * 0.4, r: bW * 0.35, c1: 'rgba(200,255,0,0.35)',   c2: 'transparent' },
+    { x: bW * (0.1  + Math.cos(bT * 0.9) * 0.1),  y: bH * 0.6, r: bW * 0.3,  c1: 'rgba(255,73,250,0.25)', c2: 'transparent' },
+  ];
+  orbs.forEach(o => {
+    const g = bCtx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+    g.addColorStop(0, o.c1);
+    g.addColorStop(1, o.c2);
+    bCtx.fillStyle = g;
+    bCtx.beginPath();
+    bCtx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+    bCtx.fill();
+  });
+
+  /* subtle grid */
+  bCtx.strokeStyle = 'rgba(255,255,255,0.025)';
+  bCtx.lineWidth   = 0.5;
+  const gridSize = 28;
+  for (let x = 0; x < bW; x += gridSize) { bCtx.beginPath(); bCtx.moveTo(x,0); bCtx.lineTo(x,bH); bCtx.stroke(); }
+  for (let y = 0; y < bH; y += gridSize) { bCtx.beginPath(); bCtx.moveTo(0,y); bCtx.lineTo(bW,y); bCtx.stroke(); }
+
+  /* scan line shimmer */
+  const shimX = (bT * 120) % (bW + 200) - 100;
+  const sg = bCtx.createLinearGradient(shimX - 60, 0, shimX + 60, 0);
+  sg.addColorStop(0,   'rgba(255,255,255,0)');
+  sg.addColorStop(0.5, 'rgba(255,255,255,0.06)');
+  sg.addColorStop(1,   'rgba(255,255,255,0)');
+  bCtx.fillStyle = sg;
+  bCtx.fillRect(shimX - 60, 0, 120, bH);
+}
+bannerLoop();
+
+/* ══════════════════════════════════════
+   CARD TILT
+══════════════════════════════════════ */
+const card = document.getElementById('card');
+let tiltAF;
+
+card.addEventListener('mousemove', e => {
+  cancelAnimationFrame(tiltAF);
+  tiltAF = requestAnimationFrame(() => {
+    const rect  = card.getBoundingClientRect();
+    const cx    = rect.left + rect.width  / 2;
+    const cy    = rect.top  + rect.height / 2;
+    const dx    = (e.clientX - cx) / (rect.width  / 2);
+    const dy    = (e.clientY - cy) / (rect.height / 2);
+    const rotY  =  dx * 10;
+    const rotX  = -dy * 10;
+    card.style.transition = 'transform 0.08s ease, box-shadow 0.3s ease';
+    card.style.transform  = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.015)`;
+    card.style.boxShadow  = `
+      0 0 0 1px rgba(255,255,255,0.04),
+      ${-dx*18}px ${-dy*18}px 60px rgba(0,0,0,0.9),
+      0 0 80px rgba(124,106,247,0.2)
+    `;
+  });
+});
+
+card.addEventListener('mouseleave', () => {
+  cancelAnimationFrame(tiltAF);
+  card.style.transition = 'transform 0.6s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.5s ease';
+  card.style.transform  = '';
+  card.style.boxShadow  = '';
+});
+
+/* touch tilt */
+card.addEventListener('touchmove', e => {
+  const t    = e.touches[0];
+  const rect = card.getBoundingClientRect();
+  const dx   = (t.clientX - rect.left - rect.width  / 2) / (rect.width  / 2);
+  const dy   = (t.clientY - rect.top  - rect.height / 2) / (rect.height / 2);
+  card.style.transform = `perspective(900px) rotateX(${-dy*6}deg) rotateY(${dx*6}deg) scale(1.01)`;
+}, { passive: true });
+card.addEventListener('touchend', () => {
+  card.style.transition = 'transform 0.5s ease';
+  card.style.transform  = '';
+});
+
+/* ══════════════════════════════════════
+   MUSIC PLAYER
+══════════════════════════════════════ */
+const audio  = document.getElementById('audio');
+const playBtn= document.getElementById('playPauseBtn');
+const playIcon = document.getElementById('playIcon');
+const progFill = document.getElementById('progressFill');
+const timeEl   = document.getElementById('timeEl');
+const durEl    = document.getElementById('durEl');
+const eq       = document.getElementById('musicEQ');
+const art      = document.getElementById('musicArt');
+const volSlider= document.getElementById('volumeSlider');
+let playing    = false;
+let shuffled   = false;
+const DURATION = 213; // 3:33 in seconds (simulated)
+let simTime    = 0;
+let simTimer;
+
+const PLAY_SVG  = `<polygon points="5,3 19,12 5,21" fill="black"/>`;
+const PAUSE_SVG = `<rect x="6" y="4" width="4" height="16" rx="1" fill="black"/><rect x="14" y="4" width="4" height="16" rx="1" fill="black"/>`;
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  const ss= Math.floor(s % 60);
+  return `${m}:${ss.toString().padStart(2,'0')}`;
+}
+
+function updateProgress() {
+  const pct = (simTime / DURATION) * 100;
+  progFill.style.width = pct + '%';
+  timeEl.textContent   = fmtTime(simTime);
+}
+
+function startSim() {
+  clearInterval(simTimer);
+  simTimer = setInterval(() => {
+    if (!playing) return;
+    simTime = (simTime + 1) % (DURATION + 1);
+    if (simTime === DURATION) simTime = 0;
+    updateProgress();
+  }, 1000);
+}
+
+function togglePlay() {
+  playing = !playing;
+  if (playing) {
+    playIcon.innerHTML = PAUSE_SVG;
+    eq.classList.remove('paused');
+    art.classList.add('spinning');
+    /* try real audio */
+    audio.volume = parseInt(volSlider.value) / 100;
+    audio.play().catch(() => {}); // may fail due to CORS — sim always runs
+    startSim();
+  } else {
+    playIcon.innerHTML = PLAY_SVG;
+    eq.classList.add('paused');
+    art.classList.remove('spinning');
+    audio.pause();
+  }
+}
+
+function seekMusic(e) {
+  const rect = document.getElementById('progressTrack').getBoundingClientRect();
+  const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  simTime    = Math.floor(pct * DURATION);
+  if (audio.duration) audio.currentTime = pct * audio.duration;
+  updateProgress();
+}
+
+function prevTrack() { simTime = 0; updateProgress(); }
+function nextTrack() { simTime = 0; updateProgress(); }
+function toggleShuffle() {
+  shuffed = !shuffled;
+  document.getElementById('shuffleBtn').style.color = shuffled ? 'var(--accent)' : '';
+}
+function setVolume(v) {
+  audio.volume = v / 100;
+}
+
+/* keyboard space = play/pause */
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+    e.preventDefault();
+    togglePlay();
+  }
+});
+
+/* init */
+audio.volume = 0.8;
+eq.classList.add('paused');
+updateProgress();
+startSim();
+</script>
+
+</body>
+</html>
